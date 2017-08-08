@@ -5,3 +5,6 @@
 *.pb.cc
 *.pb.h
 *.dylib
+
+build
+src/utils/js_version.h
