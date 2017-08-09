@@ -3,4 +3,4 @@
 JS=`dirname $0`/..
 export PYTHONPATH="$JS/src/python/jetstream":"$JS/src/proto/python/":$PYTHONPATH
 
-python src/python/jetstream/controller.py $@
+python $JS/src/python/jetstream/controller.py $@

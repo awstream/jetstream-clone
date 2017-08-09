@@ -1,18 +1,25 @@
 #!/usr/bin/env bash
+set -e
 
+## Retrieve and set variables
 JS=`dirname $0`/..
-export LD_LIBRARY_PATH=${JS}/lib
 CFG="-C worker.conf"
 PID_DIR=/tmp/jetstream
 LOGNAME=/tmp/jetstream.log
+CMD="${JS}/jsnoded --start ${CFG}"
 
+export LD_LIBRARY_PATH=${JS}/lib
+
+## Create tmp dir in case it doesn't exist
+mkdir -p ${PID_DIR}
+
+## Kill previous run
 if [ -f ${PID_DIR}/jsnode.pid ]; then
   echo "Killing previous run"
   kill `cat ${PID_DIR}/jsnode.pid`
 fi
 
-CMD="${JS}/jsnoded --start ${CFG}"
-
+## Print information and run
 echo "logging to ${LOGNAME}; libpath is ${LD_LIBRARY_PATH}"
 echo "running ${CMD}"
 nohup ${CMD} $@ >$LOGNAME 2>&1 &
