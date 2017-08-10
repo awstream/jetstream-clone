@@ -55,6 +55,10 @@ istream& operator>>(istream& str, CSVRow& data) {
   return str;
 }   
 
+ostream& operator<<(ostream &o, const VideoConfig& vc) {
+  return o << "{ width: " << vc.width << ",\t skip: " << vc.skip << ",\t quant: " << vc.quant << endl;
+}
+
 VideoSource::VideoSource() {
 }
 
@@ -64,14 +68,27 @@ int VideoSource::emit_data() {
   VideoConfig vc = profile_[cur_level_];
   map<VideoConfig, size_t>::iterator it;
   it = source_[cur_frame_].find(vc);
+  // Allocate buffer with size it->second and send it using the tuples
+  int len = it->second;
+  char* data_buf = new char[len];
   int wait = skip_to_wait_time_in_ms(vc.skip);
 
+  boost::shared_ptr<Tuple> t = boost::shared_ptr<Tuple>(new Tuple);
+  // extend_tuple(*t, p.string());
+  // t->mutable_e(0)->set_i_val( emit_count++ );
+  Element *e = t->add_e();
+  e->set_blob(data_buf, len);
+
+  vector<boost::shared_ptr<Tuple> > buf;
+  buf.push_back(t);
+
   // Prepare to send messages
-  vector<boost::shared_ptr<Tuple> > tuples;
   DataplaneMessage end_msg;
   end_msg.set_type(DataplaneMessage::END_OF_WINDOW);
   end_msg.set_window_length_ms(wait);
-  chain->process(tuples, end_msg);
+  chain->process(buf, end_msg);
+
+  LOG(INFO) << "Emitting data (size " << len << ") with configuration " << vc;
   return wait;
 }
 
