@@ -65,6 +65,13 @@ VideoSource::VideoSource() {
 // Depend on the current configuration, we emit an array of data with
 // specific size and return the expected time for next data item.
 int VideoSource::emit_data() {
+  // Always try to adapt
+  int delta = congest_policy->get_step(id(), levels_.data(), levels_.size(), cur_level_);
+  if (delta != 0) {
+    cur_level_ += delta;
+    LOG(INFO) << "VideoSource adjusting itself cur_level="<< cur_level_ << " delta=" << delta;
+  }
+
   VideoConfig vc = profile_[cur_level_];
   map<VideoConfig, size_t>::iterator it;
   it = source_[cur_frame_].find(vc);
