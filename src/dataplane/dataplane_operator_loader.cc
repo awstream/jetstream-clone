@@ -9,6 +9,7 @@
 #include "topk_tput.h"
 #include "summary_operators.h"
 #include "sosp_operators.h"
+#include "awstream_operators.h"
 
 #include "chain_ops.h"
 
@@ -142,7 +143,10 @@ jetstream::COperator *jetstream::DataPlaneOperatorLoader::newOp(string name)
   REGISTER_OP(BlobReader);
   REGISTER_OP(ImageSampler);
   REGISTER_OP(ImageQualityReporter);
-  
+
+  // Customized
+  REGISTER_OP(VideoSource);
+
   if(cache.count(name) < 1)
   {
     bool loaded = load(name);
