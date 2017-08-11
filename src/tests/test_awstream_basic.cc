@@ -48,8 +48,8 @@ TEST_F(COperatorTest, VideoSourceConfigure) {
 
   boost::shared_ptr<VideoSource> source(new VideoSource);
   map<string,string> config;
-  config["source"] =  "/root/darknet.source.csv";
-  config["profile"] =  "/root/darknet.profile.csv";
+  config["source"] =  "/tmp/jetstream/darknet.source.csv";
+  config["profile"] =  "/tmp/jetstream/darknet.profile.csv";
   config["total_frame"] =  "1800";
   source->configure(config);
   source->set_node(node.get());
