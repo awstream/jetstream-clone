@@ -7,6 +7,7 @@
 #include "chain_ops.h"
 #include "experiment_operators.h"
 #include "node.h"
+#include "queue_congestion_mon.h"
 #include <boost/date_time.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/regex.hpp>
@@ -54,12 +55,19 @@ TEST_F(COperatorTest, VideoSourceConfigure) {
   source->set_node(node.get());
   source->add_chain(chain);
 
+  boost::shared_ptr<CongestionPolicy> policy(new CongestionPolicy);
+  boost::shared_ptr<QueueCongestionMonitor> mockCongest(new QueueCongestionMonitor(256, "dummy"));
+  mockCongest->set_downstream_congestion(0.5, get_msec());
+  policy->set_congest_monitor(mockCongest);
+  policy->add_operator(source->id());
+  source->set_congestion_policy(policy);
+
   boost::shared_ptr<DummyReceiver> recv(new DummyReceiver);
   chain->add_member(source);
   chain->add_member(recv);
   chain->start();
   
-  //  boost::this_thread::sleep(boost::posix_time::milliseconds(200));
+  boost::this_thread::sleep(boost::posix_time::milliseconds(200));
 
   chain->stop();
 }
