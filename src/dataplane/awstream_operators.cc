@@ -93,10 +93,11 @@ int VideoSource::emit_data() {
   int wait = skip_to_wait_time_in_ms(vc.skip);
 
   boost::shared_ptr<Tuple> t = boost::shared_ptr<Tuple>(new Tuple);
-  // extend_tuple(*t, p.string());
-  // t->mutable_e(0)->set_i_val( emit_count++ );
+  extend_tuple(*t, "");
+  t->mutable_e(0)->set_i_val(cur_frame_);
   Element *e = t->add_e();
   e->set_blob(data_buf, len);
+  delete []data_buf;
 
   vector<boost::shared_ptr<Tuple> > buf;
   buf.push_back(t);
