@@ -37,8 +37,7 @@ def main():
   for node in all_nodes:
     if node == root_node and not options.generate_at_union:
       continue
-    reader = jsapi.VideoSource, "profile.csv", "ped-source.csv", 1500)
-    timestamp = jsapi.TimestampOperator(g, "ms")
+    reader = jsapi.VideoSource(g, "/root/darknet.profile.csv", "/root/darknet.source.csv", 1800)
     reader.instantiate_on(node)
     g.chain([reader, collector])
       

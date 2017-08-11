@@ -17,7 +17,7 @@ function start() {
     JS=`dirname $0`/..
     CFG="-C worker.conf"
     LOGNAME=/tmp/jetstream/log
-    CMD="${JS}/jsnoded --start ${CFG}"
+    CMD="${JS}/build/jsnoded --start ${CFG}"
 
     export LD_LIBRARY_PATH=${JS}/lib
 
