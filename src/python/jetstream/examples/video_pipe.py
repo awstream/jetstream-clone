@@ -38,8 +38,9 @@ def main():
     if node == root_node and not options.generate_at_union:
       continue
     reader = jsapi.VideoSource(g, "/root/darknet.profile.csv", "/root/darknet.source.csv", 1800)
+    timestamp = jsapi.TimestampOperator(g, "ms")
     reader.instantiate_on(node)
-    g.chain([reader, collector])
+    g.chain([reader, timestamp, collector])
       
   print "deploying"
   deploy_or_dummy(options, server, g)

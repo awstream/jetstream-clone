@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+JS=$(dirname $0)/..
+${JS}/bin/pyrunner.sh ${JS}/src/python/jetstream/examples/image_pipe.py	\
+    --controller 172.17.0.2:3456					\
+    -l /tmp/jetstream/latencies.log					\
+    --rate 10								\
+    --display								\
+    --prefix "file" \
+    --dir /tmp/images
