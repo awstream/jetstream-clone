@@ -247,8 +247,8 @@ target_link_libraries (${JSNODED} ${LIBRARIES})
 ###################################################
 # Build the unit tests
 
-file (GLOB_RECURSE TESTS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "src/test_*.cc")
-
+# file (GLOB_RECURSE TESTS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "src/test_*.cc")
+file (GLOB_RECURSE TESTS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "src/test_awstream_*.cc")
 set (TESTS ${SRC_DIR}/js_unit_tests.cc ${TESTS})
 
 if(CMAKE_BUILD_TYPE MATCHES RELWITHDEBINFO)

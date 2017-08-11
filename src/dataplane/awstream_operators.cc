@@ -56,7 +56,10 @@ istream& operator>>(istream& str, CSVRow& data) {
 }   
 
 ostream& operator<<(ostream &o, const VideoConfig& vc) {
-  return o << "{ width: " << vc.width << ",\t skip: " << vc.skip << ",\t quant: " << vc.quant << endl;
+  return o << "{ width: " << vc.width
+	   << ",\t skip: " << vc.skip
+	   << ",\t quant: " << vc.quant
+	   << " } " << endl;
 }
 
 VideoSource::VideoSource() {
@@ -65,11 +68,13 @@ VideoSource::VideoSource() {
 // Depend on the current configuration, we emit an array of data with
 // specific size and return the expected time for next data item.
 int VideoSource::emit_data() {
-  // Always try to adapt
-  int delta = congest_policy->get_step(id(), levels_.data(), levels_.size(), cur_level_);
-  if (delta != 0) {
-    cur_level_ += delta;
-    LOG(INFO) << "VideoSource adjusting itself cur_level="<< cur_level_ << " delta=" << delta;
+  // If congestion policy set, try to adapt
+  if (congest_policy) {
+    int delta = congest_policy->get_step(id(), levels_.data(), levels_.size(), cur_level_);
+    if (delta != 0) {
+      cur_level_ += delta;
+      LOG(INFO) << "VideoSource adjusting itself cur_level="<< cur_level_ << " delta=" << delta;
+    }
   }
 
   VideoConfig vc = profile_[cur_level_];
@@ -125,10 +130,12 @@ operator_err_t VideoSource::configure(map<string, string> &config) {
   // <width, skip, quant, frame_no, bytes>
   string source_file = config["source"];
   int total_frame = atoi(config["total_frame"].c_str());
+
   for (int i = 0; i < total_frame; i++) {
     map<VideoConfig, size_t> m;
     source_.push_back(m);
   }
+
   {
     ifstream file(source_file.c_str());
     unsigned bytes;
@@ -138,7 +145,7 @@ operator_err_t VideoSource::configure(map<string, string> &config) {
       vc.quant = atoi(row[2].c_str());
       int i = atoi(row[3].c_str());
       bytes = atoi(row[4].c_str());
-      source_[i].insert(pair<VideoConfig, size_t>(vc, bytes));
+      source_[i - 1].insert(pair<VideoConfig, size_t>(vc, bytes));
     }
   }
 
