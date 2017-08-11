@@ -39,6 +39,7 @@ class VideoSource: public TimerSource {
   std::vector<VideoConfig> profile_;
 
   size_t cur_frame_;
+  size_t total_frame_;
 
   // an array whose index is the frame: each element maps the current
   // video config to a specific byte size

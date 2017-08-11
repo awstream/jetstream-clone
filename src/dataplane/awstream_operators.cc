@@ -62,7 +62,7 @@ ostream& operator<<(ostream &o, const VideoConfig& vc) {
 	   << " } " << endl;
 }
 
-VideoSource::VideoSource() {
+VideoSource::VideoSource() : cur_frame_(0) {
 }
 
 // Depend on the current configuration, we emit an array of data with
@@ -80,8 +80,18 @@ int VideoSource::emit_data() {
   VideoConfig vc = profile_[cur_level_];
   map<VideoConfig, size_t>::iterator it;
   it = source_[cur_frame_].find(vc);
-  // Allocate buffer with size it->second and send it using the tuples
+
+  if (it == source_[cur_frame_].end()) {
+    LOG(FATAL) << "Please check the source and profile matches!";
+  }
+
   int len = it->second;
+
+  LOG(INFO) << "Emitting frame " << cur_frame_
+	    << " (size " << len
+	    << ") with configuration " << vc;
+
+  // Allocate buffer with size it->second and send it using the tuples
   char* data_buf = new char[len];
   int wait = skip_to_wait_time_in_ms(vc.skip);
 
@@ -100,7 +110,10 @@ int VideoSource::emit_data() {
   end_msg.set_window_length_ms(wait);
   chain->process(buf, end_msg);
 
-  LOG(INFO) << "Emitting data (size " << len << ") with configuration " << vc;
+  cur_frame_++;
+  if (cur_frame_ >= total_frame_) {
+    cur_frame_ = 0;
+  }
   return wait;
 }
 
@@ -113,7 +126,7 @@ operator_err_t VideoSource::configure(map<string, string> &config) {
   string profile_file = config["profile"];
   {
     ifstream file(profile_file.c_str());
-    while(file >> row) {
+    while (file >> row) {
       bw = atof(row[0].c_str());
       vc.width = atoi(row[1].c_str());
       vc.skip = atoi(row[2].c_str());
@@ -129,9 +142,9 @@ operator_err_t VideoSource::configure(map<string, string> &config) {
   // Second, we load the source file
   // <width, skip, quant, frame_no, bytes>
   string source_file = config["source"];
-  int total_frame = atoi(config["total_frame"].c_str());
+  total_frame_ = atoi(config["total_frame"].c_str());
 
-  for (int i = 0; i < total_frame; i++) {
+  for (size_t i = 0; i < total_frame_; i++) {
     map<VideoConfig, size_t> m;
     source_.push_back(m);
   }
@@ -139,13 +152,13 @@ operator_err_t VideoSource::configure(map<string, string> &config) {
   {
     ifstream file(source_file.c_str());
     unsigned bytes;
-    while(file >> row) {
+    while (file >> row) {
       vc.width = atoi(row[0].c_str());
       vc.skip = atoi(row[1].c_str());
       vc.quant = atoi(row[2].c_str());
       int i = atoi(row[3].c_str());
       bytes = atoi(row[4].c_str());
-      source_[i - 1].insert(pair<VideoConfig, size_t>(vc, bytes));
+      source_[i - 1].insert(make_pair(vc, bytes));
     }
   }
 
