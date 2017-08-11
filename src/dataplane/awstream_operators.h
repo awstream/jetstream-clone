@@ -2,6 +2,9 @@
 #define __JetStream__awstream_operators__
 
 #include "chain_ops.h"
+#include "boost/tuple/tuple.hpp"
+#include "boost/tuple/tuple_comparison.hpp"
+
 namespace jetstream {
 
 class VideoConfig {
@@ -10,9 +13,7 @@ class VideoConfig {
   size_t skip;
   size_t quant;
   bool operator<(const VideoConfig& src) const  {
-    return (this->width < src.width) ||
-      (this->skip < src.skip) ||
-      (this->quant < src.quant);
+    return boost::make_tuple(this->width, this->skip, this->quant) < boost::make_tuple(src.width, src.skip, src.quant);
   }
 };
 

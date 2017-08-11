@@ -56,10 +56,9 @@ istream& operator>>(istream& str, CSVRow& data) {
 }   
 
 ostream& operator<<(ostream &o, const VideoConfig& vc) {
-  return o << "{ width: " << vc.width
-	   << ",\t skip: " << vc.skip
-	   << ",\t quant: " << vc.quant
-	   << " } " << endl;
+  return o << vc.width
+	   << ", " << vc.skip
+	   << ", " << vc.quant;
 }
 
 VideoSource::VideoSource() : cur_frame_(0) {
@@ -78,9 +77,7 @@ int VideoSource::emit_data() {
   }
 
   VideoConfig vc = profile_[cur_level_];
-  map<VideoConfig, size_t>::iterator it;
-  it = source_[cur_frame_].find(vc);
-
+  map<VideoConfig, size_t>::iterator it = source_[cur_frame_].find(vc);
   if (it == source_[cur_frame_].end()) {
     LOG(FATAL) << "Please check the source and profile matches!";
   }
@@ -158,6 +155,8 @@ operator_err_t VideoSource::configure(map<string, string> &config) {
       vc.quant = atoi(row[2].c_str());
       int i = atoi(row[3].c_str());
       bytes = atoi(row[4].c_str());
+
+      // LOG(INFO) << "inserting into " << i - 1 << " with size " << bytes << " and " << vc ;
       source_[i - 1].insert(make_pair(vc, bytes));
     }
   }

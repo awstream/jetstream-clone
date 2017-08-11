@@ -57,7 +57,7 @@ TEST_F(COperatorTest, VideoSourceConfigure) {
 
   boost::shared_ptr<CongestionPolicy> policy(new CongestionPolicy);
   boost::shared_ptr<QueueCongestionMonitor> mockCongest(new QueueCongestionMonitor(256, "dummy"));
-  mockCongest->set_downstream_congestion(0.5, get_msec());
+  mockCongest->set_downstream_congestion(1.0, get_msec());
   policy->set_congest_monitor(mockCongest);
   policy->add_operator(source->id());
   source->set_congestion_policy(policy);
@@ -66,7 +66,9 @@ TEST_F(COperatorTest, VideoSourceConfigure) {
   chain->add_member(source);
   chain->add_member(recv);
   chain->start();
-  
+
+  boost::this_thread::sleep(boost::posix_time::milliseconds(200));
+  mockCongest->set_downstream_congestion(0.5, get_msec());
   boost::this_thread::sleep(boost::posix_time::milliseconds(200));
 
   chain->stop();
