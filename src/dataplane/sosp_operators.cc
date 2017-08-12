@@ -200,7 +200,7 @@ ImageQualityReporter::get_chain_index(OperatorChain * c) {
 
 static const int VERYLATE_THRESH = 30 * 1000; //in milliseconds
 static const double GLOBAL_QUANT = 0.999;
-static const int PERIOD_SECS = 8; //want to see "prolonged" spikes in quantiles.
+static const int PERIOD_SECS = 5; //want to see "prolonged" spikes in quantiles.
 
 void
 ImageQualityReporter::process ( OperatorChain * c,
