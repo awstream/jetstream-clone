@@ -85,8 +85,8 @@ int VideoSource::emit_data() {
   int len = it->second;
 
   LOG(INFO) << "Emitting frame " << cur_frame_
-	    << " (size " << len
-	    << ") with configuration " << vc;
+	    << len << " (size) "
+	    << cur_level_ << " (level) with configuration " << vc;
 
   // Allocate buffer with size it->second and send it using the tuples
   char* data_buf = new char[len];

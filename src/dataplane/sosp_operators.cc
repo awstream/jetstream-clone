@@ -262,7 +262,8 @@ ImageQualityReporter::emit_stats() {
     return;
 
   uint64_t bytes;
-  long median, total, this_95th, global_quant, period_max;
+  long sum, median, total, this_95th, global_quant, period_max;
+  double mean;
   vector<long long> counts_by_node;
   vector<long> verylate_by_chain_copy;
   double src_stddev;
@@ -278,7 +279,15 @@ ImageQualityReporter::emit_stats() {
     global_quant = latencies_total.quantile(GLOBAL_QUANT);
     period_max = max_latency;
     src_stddev = get_stddev(bytes_per_src_total);
-    
+
+    for(std::vector<long>::iterator it = latencies_for_mean.begin();
+	it != latencies_for_mean.end();
+	++it) {
+      sum += *it;
+    }
+    mean = sum * 1.0 / latencies_for_mean.size();
+    latencies_for_mean.clear();
+
     latencies_this_period.clear();
     by_node_in_period = bytes_per_src_in_period;
     bytes_per_src_in_period.assign(bytes_per_src_in_period.size(), 0);
@@ -299,8 +308,8 @@ ImageQualityReporter::emit_stats() {
       nodes ++;
   
   msec_t ts = get_msec();
-  (*out_stream) << ts << " "<< bytes << " bytes. " << total << " images. " << median
-                << " (median) " << this_95th  << " (95th) " << global_quant <<
+  (*out_stream) << ts << " "<< bytes << " bytes. " << total << " images. " << mean << " (mean) "
+		<< median << " (median) " << this_95th  << " (95th) " << global_quant <<
                  " (global-"<< (100*GLOBAL_QUANT) <<") " << src_stddev<< " (src_dev;global) "
                  << period_max << " (max) " << nodes <<  " nodes"<< endl;
   
