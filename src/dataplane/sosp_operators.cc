@@ -223,6 +223,7 @@ ImageQualityReporter::process ( OperatorChain * c,
       max_latency = max<long>(max_latency, latency_ms);
       
       if (latency_ms >= 0) {
+        latencies_for_mean.push_back((long)latency_ms);
         latencies_this_period.add_item(latency_ms, 1);
         latencies_total.add_item(latency_ms, 1);
         
