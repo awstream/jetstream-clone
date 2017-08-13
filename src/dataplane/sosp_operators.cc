@@ -263,14 +263,13 @@ ImageQualityReporter::emit_stats() {
     return;
 
   uint64_t bytes;
-  long sum, median, total, this_95th, global_quant, period_max;
+  long median, total, this_95th, global_quant, period_max;
   double mean;
   vector<long long> counts_by_node;
   vector<long> verylate_by_chain_copy;
   double src_stddev;
   vector<long> by_node_in_period;
 
-  
   {
     boost::unique_lock<boost::mutex> l(mutex);
     bytes = bytes_this_period;
@@ -281,6 +280,7 @@ ImageQualityReporter::emit_stats() {
     period_max = max_latency;
     src_stddev = get_stddev(bytes_per_src_total);
 
+    long sum = 0;
     for(std::vector<long>::iterator it = latencies_for_mean.begin();
 	it != latencies_for_mean.end();
 	++it) {
