@@ -18,7 +18,7 @@ using namespace boost;
 namespace jetstream {
 
 int skip_to_wait_time_in_ms(int skip) {
-  return (int)(1000.0 / 30.0 / (skip + 1.0));
+  return (int)(1000.0 / 30.0 * (skip + 1.0));
 }
 
 class CSVRow {
