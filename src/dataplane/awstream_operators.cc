@@ -18,7 +18,8 @@ using namespace boost;
 namespace jetstream {
 
 int skip_to_wait_time_in_ms(int skip) {
-  return (int)(1000.0 / 30.0 * (skip + 1.0));
+  return 33;
+  // return (int)(1000.0 / 30.0 * (skip + 1.0));
 }
 
 class CSVRow {
@@ -84,7 +85,7 @@ int VideoSource::emit_data() {
 
   int len = it->second;
 
-  LOG(INFO) << "Emitting frame " << cur_frame_
+  LOG(INFO) << "Emitting " << cur_frame_ << " (frame) "
 	    << len << " (size) "
 	    << cur_level_ << " (level) with configuration " << vc;
 
