@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+JS=`dirname $0`/..
+export PYTHONPATH="$JS/src/python/jetstream":"$JS/src/proto/python/":$PYTHONPATH
+
+python $JS/src/python/jetstream/controller.py $@

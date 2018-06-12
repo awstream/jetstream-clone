@@ -200,7 +200,7 @@ ImageQualityReporter::get_chain_index(OperatorChain * c) {
 
 static const int VERYLATE_THRESH = 30 * 1000; //in milliseconds
 static const double GLOBAL_QUANT = 0.999;
-static const int PERIOD_SECS = 8; //want to see "prolonged" spikes in quantiles.
+static const int PERIOD_SECS = 1; //want to see "prolonged" spikes in quantiles.
 
 void
 ImageQualityReporter::process ( OperatorChain * c,
@@ -223,6 +223,7 @@ ImageQualityReporter::process ( OperatorChain * c,
       max_latency = max<long>(max_latency, latency_ms);
       
       if (latency_ms >= 0) {
+        latencies_for_mean.push_back((long)latency_ms);
         latencies_this_period.add_item(latency_ms, 1);
         latencies_total.add_item(latency_ms, 1);
         
@@ -263,12 +264,12 @@ ImageQualityReporter::emit_stats() {
 
   uint64_t bytes;
   long median, total, this_95th, global_quant, period_max;
+  double mean;
   vector<long long> counts_by_node;
   vector<long> verylate_by_chain_copy;
   double src_stddev;
   vector<long> by_node_in_period;
 
-  
   {
     boost::unique_lock<boost::mutex> l(mutex);
     bytes = bytes_this_period;
@@ -278,7 +279,16 @@ ImageQualityReporter::emit_stats() {
     global_quant = latencies_total.quantile(GLOBAL_QUANT);
     period_max = max_latency;
     src_stddev = get_stddev(bytes_per_src_total);
-    
+
+    long sum = 0;
+    for(std::vector<long>::iterator it = latencies_for_mean.begin();
+	it != latencies_for_mean.end();
+	++it) {
+      sum += *it;
+    }
+    mean = sum * 1.0 / latencies_for_mean.size();
+    latencies_for_mean.clear();
+
     latencies_this_period.clear();
     by_node_in_period = bytes_per_src_in_period;
     bytes_per_src_in_period.assign(bytes_per_src_in_period.size(), 0);
@@ -299,8 +309,8 @@ ImageQualityReporter::emit_stats() {
       nodes ++;
   
   msec_t ts = get_msec();
-  (*out_stream) << ts << " "<< bytes << " bytes. " << total << " images. " << median
-                << " (median) " << this_95th  << " (95th) " << global_quant <<
+  (*out_stream) << ts << " "<< bytes << " bytes. " << total << " images. " << mean << " (mean) "
+		<< median << " (median) " << this_95th  << " (95th) " << global_quant <<
                  " (global-"<< (100*GLOBAL_QUANT) <<") " << src_stddev<< " (src_dev;global) "
                  << period_max << " (max) " << nodes <<  " nodes"<< endl;
   

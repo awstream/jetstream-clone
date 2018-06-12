@@ -83,6 +83,8 @@ class ImageQualityReporter: public COperator {
   long long bytes_this_period;
   
   LogHistogram latencies_this_period, latencies_total;
+  std::vector<long> latencies_for_mean;
+
   long max_latency; //latency, ms
   
   std::string logging_filename;

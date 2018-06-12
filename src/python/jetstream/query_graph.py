@@ -640,7 +640,9 @@ def filter_subsc_validate(filter_op, input_schemas):
           "Schema was %s." % (level_in, str(in_s)))
   return ret
 
-
+def VideoSource(graph, profile, source, total_frame):
+   cfg = {"profile":profile, "source":source, "total_frame":total_frame}
+   return graph.add_operator(OpType.VIDEO_SOURCE, cfg)
 
 def BlobReader(graph, dirname, prefix, files_per_window, ms_per_window = 1000):
    cfg = {"dirname":dirname, "prefix":prefix, 'files_per_window':files_per_window, \

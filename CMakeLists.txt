@@ -7,7 +7,7 @@ cmake_policy(SET CMP0003 NEW)
 
 # Add Compiler Definitions.  Must be done before project or language set.
 
-option(USE_CLANG "build application with clang" ON)
+option(USE_CLANG "build application with clang" OFF)
 option(FULL_STATIC "build application maximally statically" OFF)
 
 if(USE_CLANG)
@@ -39,7 +39,7 @@ endif (FULL_STATIC)
 
 
 SET (CMAKE_C_COMMON                "-std=c99 -DNO_SSL")
-SET (CMAKE_C_FLAGS                "-Wall -Werror ${CMAKE_C_COMMON}")
+SET (CMAKE_C_FLAGS                "-Wall ${CMAKE_C_COMMON}")
 SET (CMAKE_C_FLAGS_DEBUG          "-g -O0 ${CMAKE_C_COMMON}")
 SET (CMAKE_C_FLAGS_RELEASE        "-O4 -DNDEBUG ${CMAKE_C_COMMON}")
 SET (CMAKE_C_FLAGS_RELWITHDEBINFO "-O2 -g ${CMAKE_C_COMMON}")
@@ -50,7 +50,7 @@ SET (CMAKE_CXX_COMMON                "-DNO_SSL -fPIC -DGTEST_HAS_TR1_TUPLE=0 -pt
 SET (CMAKE_CXX_FLAGS                "-Wall ${CMAKE_CXX_COMMON}")
 #  -std=c++11 -DBOOST_NO_CXX11_RVALUE_REFERENCES
 #  -D BOOST_NO_CXX11_NUMERIC_LIMITS=1  -DBOOST_NO_CXX11_RVALUE_REFERENCES
-SET (CMAKE_CXX_FLAGS_DEBUG          "-g -O0 -Werror  ${CMAKE_CXX_COMMON}")
+SET (CMAKE_CXX_FLAGS_DEBUG          "-g -O0 ${CMAKE_CXX_COMMON}")
 SET (CMAKE_CXX_FLAGS_RELEASE        "-O2 -DNDEBUG  ${CMAKE_CXX_COMMON}")
 SET (CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g  ${CMAKE_CXX_COMMON}")
 
@@ -122,6 +122,7 @@ include_directories (/opt/local/include/mysql5-connector-cpp/driver /opt/local/i
 
 ### Build Masstree
 #
+set(OMIT_MASSTREE ON)
 
 if(OMIT_MASSTREE)
 message (STATUS "omitting masstree")
@@ -246,8 +247,8 @@ target_link_libraries (${JSNODED} ${LIBRARIES})
 ###################################################
 # Build the unit tests
 
-file (GLOB_RECURSE TESTS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "src/test_*.cc")
-
+# file (GLOB_RECURSE TESTS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "src/test_*.cc")
+file (GLOB_RECURSE TESTS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "src/test_awstream_*.cc")
 set (TESTS ${SRC_DIR}/js_unit_tests.cc ${TESTS})
 
 if(CMAKE_BUILD_TYPE MATCHES RELWITHDEBINFO)

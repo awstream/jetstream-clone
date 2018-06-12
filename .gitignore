@@ -5,3 +5,12 @@
 *.pb.cc
 *.pb.h
 *.dylib
+
+build
+src/utils/js_version.h
+
+TAGS
+jsnoded
+js_unit_tests
+
+*.log

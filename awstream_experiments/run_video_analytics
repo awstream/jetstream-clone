@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+JS=$(dirname $0)/..
+${JS}/bin/pyrunner.sh ${JS}/src/python/jetstream/examples/video_pipe.py	\
+    -u 54.215.254.255 \
+    --controller 128.32.171.191:3456					\
+    -l /tmp/jetstream/latencies.log \
+    --display
